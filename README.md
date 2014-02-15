@@ -19,6 +19,10 @@ The list of currently supported engines is the following:
    * AVG (Fast)
    * DrWeb (Slow)
 
+This tool have been tested only under Linux. However, it should work equally
+in other Unix based operating systems as well as in Windows as long as the
+output from the AV command line utilities maintains the same format.
+
 ## Example usages
 
 MultiAV.py can be executed via the command line by simply giving to it a
