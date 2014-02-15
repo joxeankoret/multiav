@@ -1,5 +1,5 @@
-multiav
-=======
+MultiAV Scanner Wrapper
+=======================
 
 MultiAV Python API. It can scan a file or directory with multiple AV
 engines simulateneously. It uses, with the only exception of ClamAV, the
