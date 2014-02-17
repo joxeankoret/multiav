@@ -6,7 +6,8 @@ engines simulateneously. It uses, with the only exception of ClamAV, the
 command line AV scanners and extracts the malware names from the output
 of the command line tools (for ClamAV it uses the https://code.google.com/p/pyclamd/ extension).
 
-The list of currently supported engines is the following:
+It supports a total of 11 AV engines. The list of currently supported
+engines is the following:
 
    * ClamAV (Fast)
    * F-Prot (Fast)
@@ -15,9 +16,10 @@ The list of currently supported engines is the following:
    * ESET (Slow)
    * Avira (Slow)
    * Sophos (Medium)
-   * Avast (Slow)
+   * Avast (Very slow, only enabled when running all the engines)
    * AVG (Fast)
    * DrWeb (Slow)
+   * McAfee (Very slow, only enabled when running all the engines)
 
 This tool have been tested only under Linux. However, it should work equally
 in other Unix based operating systems as well as in Windows as long as the
@@ -94,15 +96,19 @@ multi_av = multiav.CMultiAV("/path/to/cfg")
 
 In the example Python code we're also specifying that we only want to 
 run antivirus scanners considered of either fast or "medium" speed. We
-can also specify that we want to run all engines (both "fast", "medium"
-and "slow" ones) by setting the second argument to object.scan() to
-AV_SPEED_SLOW:
+can also specify that we want to run all engines (both "fast", "medium",
+"slow" and "very slow" ones) by setting the second argument to
+object.scan() to AV_SPEED_ALL (or to AV_SPEED_SLOW if we want to omit
+the scanners that are really slow, namely, Avast and McAfee):
 
 ```python
+# For all engines
+ret = multi_av.scan(path, multiav.AV_SPEED_ALL)
+# For most of the engines with the only exception Avast and McAfee
 ret = multi_av.scan(path, multiav.AV_SPEED_SLOW)
 ```
 
-This is the default behaviour if one doesn't specifies the maximum 
+AV_SPEED_ALL is default behaviour if one doesn't specifies the maximum 
 allowed speed. One can also specify that only fast engines can be 
 executed:
 
@@ -121,5 +127,27 @@ method object.scan(), as in the following example:
 ```python
 ret = multi_av.scan_single(path, multiav.AV_SPEED_SLOW)
 ```
+
+One can also scan a single buffer using the object.scan_buffer() API:
+
+```python
+ret = multiav.scan_buffer(buf, multiav.AV_SPEED_SLOW)
+```
+
+## Configuration file
+
+When creating a CMultiAV object one can specify a configuration file
+like in the following example:
+
+```python
+multi_av = multiav.CMultiAV("/path/to/cfg")
+```
+
+The format of the configuration file is rather easy. There are only 2 or
+3 parameters that one needs in order to use and configure an AV engine
+scanner: PATH, ARGUMENTS and DISABLED (if the engine is not enabled).
+The only exception to the rule is ClamAV for which there are only 2 
+configuration directies: DISABLED and UNIX_SOCKET, which is the Unix 
+socket where the daemon "clamd" is listening.
 
 Copyright (c) 2014 Joxean Koret

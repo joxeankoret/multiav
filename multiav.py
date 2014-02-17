@@ -70,6 +70,7 @@ except ImportError:
   has_clamd = False
 
 #-----------------------------------------------------------------------
+AV_SPEED_ALL = 3 # Run only when all engines must be executed
 AV_SPEED_SLOW = 2
 AV_SPEED_MEDIUM = 1
 AV_SPEED_FAST = 0
@@ -109,6 +110,14 @@ class CAvScanner:
     for match in matches:
       self.results[match[self.file_index]] = match[self.malware_index]
     return len(self.results) > 0
+  
+  def is_disabled(self):
+    parser = self.cfg_parser
+    try:
+      self.cfg_parser.get(self.name, "DISABLED")
+      return True
+    except:
+      return False
 
 #-----------------------------------------------------------------------
 class CComodoScanner(CAvScanner):
@@ -235,7 +244,7 @@ class CAvastScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "Avast"
-    self.speed = AV_SPEED_SLOW
+    self.speed = AV_SPEED_ALL
     self.pattern = "(.*)\s\[infected by: (.*)\]"
 
   def scan(self, path):
@@ -249,6 +258,28 @@ class CDrWebScanner(CAvScanner):
     self.name = "DrWeb"
     self.speed = AV_SPEED_SLOW
     self.pattern = "\>{0,1}(.*) infected with (.*)"
+
+#-----------------------------------------------------------------------
+class CMcAfeeScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "McAfee"
+    self.speed = AV_SPEED_ALL
+    self.pattern = "(.*) \.\.\. Found the (.*) [a-z]+ \!\!"
+    self.pattern2 = "(.*) \.\.\. Found [a-z]+ or variant (.*) \!\!"
+
+  def scan(self, path):
+    os.putenv("LANG", "C")
+    ret = CAvScanner.scan(self, path)
+    
+    try:
+      old_pattern = self.pattern
+      self.pattern = self.pattern2
+      ret |= CAvScanner.scan(self, path)
+    finally:
+      self.pattern = old_pattern
+
+    return ret
 
 #-----------------------------------------------------------------------
 class CAvgScanner(CAvScanner):
@@ -290,7 +321,8 @@ class CMultiAV:
   def __init__(self, cfg = "config.cfg"):
     self.engines = [CFProtScanner, CComodoScanner, CEsetScanner, 
                     CAviraScanner, CBitDefenderScanner, CSophosScanner,
-                    CAvastScanner, CAvgScanner, CDrWebScanner]
+                    CAvastScanner, CAvgScanner, CDrWebScanner,
+                    CMcAfeeScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
@@ -332,7 +364,7 @@ class CMultiAV:
       results.update(q.get())
     return results
 
-  def scan(self, path, max_speed=AV_SPEED_SLOW):
+  def scan(self, path, max_speed=AV_SPEED_ALL):
     if not os.path.exists(path):
       raise Exception("Path not found")
 
@@ -341,7 +373,7 @@ class CMultiAV:
     else:
       return self.single_scan(path, max_speed)
 
-  def single_scan(self, path, max_speed=AV_SPEED_SLOW):
+  def single_scan(self, path, max_speed=AV_SPEED_ALL):
     results = {}
     for av_engine in self.engines:
       results = self.scan_one(av_engine, path, results, max_speed)
@@ -349,6 +381,9 @@ class CMultiAV:
 
   def scan_one(self, av_engine, path, results, max_speed, q=None):
     av = av_engine(self.parser)
+    if av.is_disabled():
+      return
+
     if av.speed <= max_speed:
       av.scan(path)
       results[av.name] = av.results
@@ -356,6 +391,19 @@ class CMultiAV:
     if q is not None:
       q.put(results)
     return results
+  
+  def scan_buffer(self, buf, max_speed=AV_SPEED_ALL):
+    f = NamedTemporaryFile(delete=False)
+    f.write(buf)
+    f.close()
+    fname = f.name
+
+    try:
+      ret = self.scan(fname)
+    finally:
+      os.unlink(fname)
+
+    return ret
 
 #-----------------------------------------------------------------------
 def main(path):
