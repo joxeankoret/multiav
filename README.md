@@ -104,7 +104,7 @@ the scanners that are really slow, namely, Avast and McAfee):
 ```python
 # For all engines
 ret = multi_av.scan(path, multiav.AV_SPEED_ALL)
-# For most of the engines with the only exception Avast and McAfee
+# For most of the engines with the only exception of Avast and McAfee
 ret = multi_av.scan(path, multiav.AV_SPEED_SLOW)
 ```
 
@@ -147,7 +147,22 @@ The format of the configuration file is rather easy. There are only 2 or
 3 parameters that one needs in order to use and configure an AV engine
 scanner: PATH, ARGUMENTS and DISABLED (if the engine is not enabled).
 The only exception to the rule is ClamAV for which there are only 2 
-configuration directies: DISABLED and UNIX_SOCKET, which is the Unix 
+configuration directives: DISABLED and UNIX_SOCKET, which is the Unix 
 socket where the daemon "clamd" is listening.
+
+So, let's say that we want to disable Sophos scanner and configure a new
+path for McAfee scanner. We would need to modify our *.cfg file with a
+content similar to the following one:
+
+```
+[McAfee]
+PATH=/new/path/to/uvscan
+ARGUMENTS=-the -arguments -we -want
+
+[Sophos]
+PATH=whatever
+ARGUMENTS=whatever
+DISABLED=1
+```
 
 Copyright (c) 2014 Joxean Koret
