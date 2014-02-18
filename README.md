@@ -20,6 +20,8 @@ engines is the following:
    * AVG (Fast)
    * DrWeb (Slow)
    * McAfee (Very slow, only enabled when running all the engines)
+   * Ikarus (Medium, using Wine in Linux/Unix)
+   * F-Secure (Fast)
 
 This tool have been tested only under Linux. However, it should work equally
 in other Unix based operating systems as well as in Windows as long as the

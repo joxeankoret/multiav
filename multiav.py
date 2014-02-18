@@ -41,11 +41,12 @@
 #   * Avast (Slow)
 #   * AVG (Fast)
 #   * DrWeb (Slow)
+#   * Ikarus (Medium, using wine)
+#   * F-Secure (Fast)
 #
 # Support for the following AV engines is planned:
 #
 #   * Kaspersky
-#   * F-Secure
 #
 # Features:
 #
@@ -57,6 +58,7 @@
 import os
 import re
 import sys
+import codecs
 import ConfigParser
 
 from tempfile import NamedTemporaryFile
@@ -99,7 +101,11 @@ class CAvScanner:
     if self.pattern is None:
       Exception("Not implemented")
 
-    cmd = self.build_cmd(path)
+    try:
+      cmd = self.build_cmd(path)
+    except: # There is no entry in the *.cfg file for this AV engine?
+      pass
+
     try:
       output = check_output(cmd)
     except CalledProcessError as e:
@@ -313,16 +319,51 @@ class CAvgScanner(CAvScanner):
     return len(self.results) > 0
 
 #-----------------------------------------------------------------------
-def multi_scan(self, av_engine, path, results, max_speed, q):
-  return self.scan_one(av_engine, path, results, max_speed, q)
+class CIkarusScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "Ikarus"
+    self.speed = AV_SPEED_MEDIUM
+    # Horrible, isn't it?
+    self.pattern = "(.*) - Signature \d+ '(.*)' found"
+  
+  def scan(self, path):
+    cmd = self.build_cmd(path)
+    f = NamedTemporaryFile(delete=False)
+    f.close()
+    fname = f.name
+
+    try:
+      cmd.append("-logfile")
+      cmd.append(fname)
+      output = check_output(cmd)
+    except CalledProcessError as e:
+      output = e.output
+
+    output = codecs.open(fname, "r", "utf-16").read()
+    os.unlink(fname)
+
+    matches = re.findall(self.pattern, output, re.IGNORECASE|re.MULTILINE)
+    for match in matches:
+      if match[1] not in ["file"]:
+        self.results[match[0]] = match[1]
+    return len(self.results) > 0
+
+#-----------------------------------------------------------------------
+class CFSecureScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "F-Secure"
+    self.speed = AV_SPEED_FAST
+    self.pattern = "(.*): Infected: (.*) \[[a-z]+\]"
 
 #-----------------------------------------------------------------------
 class CMultiAV:
   def __init__(self, cfg = "config.cfg"):
-    self.engines = [CFProtScanner, CComodoScanner, CEsetScanner, 
-                    CAviraScanner, CBitDefenderScanner, CSophosScanner,
-                    CAvastScanner, CAvgScanner, CDrWebScanner,
-                    CMcAfeeScanner]
+    self.engines = [CFProtScanner,  CComodoScanner,      CEsetScanner, 
+                    CAviraScanner,  CBitDefenderScanner, CSophosScanner,
+                    CAvastScanner,  CAvgScanner,         CDrWebScanner,
+                    CMcAfeeScanner, CIkarusScanner,      CFSecureScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
@@ -408,7 +449,7 @@ class CMultiAV:
 #-----------------------------------------------------------------------
 def main(path):
   multi_av = CMultiAV()
-  ret = multi_av.scan(path, AV_SPEED_MEDIUM)
+  ret = multi_av.scan(path, AV_SPEED_ALL)
   
   import pprint
   pprint.pprint(ret)
