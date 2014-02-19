@@ -41,7 +41,7 @@
 #   * Avast (Slow)
 #   * AVG (Fast)
 #   * DrWeb (Slow)
-#   * Ikarus (Medium, using wine)
+#   * Ikarus (Medium, using wine in Linux/Unix)
 #   * F-Secure (Fast)
 #
 # Support for the following AV engines is planned:
@@ -423,7 +423,7 @@ class CMultiAV:
   def scan_one(self, av_engine, path, results, max_speed, q=None):
     av = av_engine(self.parser)
     if av.is_disabled():
-      return
+      return results
 
     if av.speed <= max_speed:
       av.scan(path)
