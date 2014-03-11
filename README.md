@@ -2,7 +2,7 @@ MultiAV Scanner Wrapper
 =======================
 
 MultiAV Python API. It can scan a file or directory with multiple AV
-engines simulataneously. It uses, with the only exception of ClamAV, the
+engines simultaneously. It uses, with the only exception of ClamAV, the
 command line AV scanners and extracts the malware names from the output
 of the command line tools (for ClamAV it uses the https://code.google.com/p/pyclamd/ extension).
 
