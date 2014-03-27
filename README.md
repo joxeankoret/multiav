@@ -6,7 +6,7 @@ engines simultaneously. It uses, with the only exception of ClamAV, the
 command line AV scanners and extracts the malware names from the output
 of the command line tools (for ClamAV it uses the https://code.google.com/p/pyclamd/ extension).
 
-It supports a total of 13 AV engines. The list of currently supported
+It supports a total of 14 AV engines. The list of currently supported
 engines is the following:
 
    * ClamAV (Fast)
