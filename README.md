@@ -6,7 +6,7 @@ engines simultaneously. It uses, with the only exception of ClamAV, the
 command line AV scanners and extracts the malware names from the output
 of the command line tools (for ClamAV it uses the https://code.google.com/p/pyclamd/ extension).
 
-It supports a total of 13 AV engines. The list of currently supported
+It supports a total of 14 AV engines. The list of currently supported
 engines is the following:
 
    * ClamAV (Fast)
@@ -22,6 +22,7 @@ engines is the following:
    * McAfee (Very slow, only enabled when running all the engines)
    * Ikarus (Medium, using Wine in Linux/Unix)
    * F-Secure (Fast)
+   * Kaspersky (Fast, only tested under MacOSX)
 
 This tool have been tested only under Linux. However, it should work equally
 in other Unix based operating systems as well as in Windows as long as the
