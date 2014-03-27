@@ -387,7 +387,6 @@ class CMultiAV:
     if has_clamd:
       self.engines.append(CClamScanner)
 
-    self.engines = []
     self.processes = cpu_count()
     self.cfg = cfg
     self.read_config()
