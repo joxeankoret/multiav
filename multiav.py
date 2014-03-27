@@ -43,8 +43,9 @@
 #   * DrWeb (Slow)
 #   * Ikarus (Medium, using wine in Linux/Unix)
 #   * F-Secure (Fast)
+#   * Kaspersky (Fast)
 #
-# Support for the following AV engines is planned:
+# Support for the following AV engines is limited to MacOSX and Windows:
 #
 #   * Kaspersky
 #
@@ -132,6 +133,24 @@ class CComodoScanner(CAvScanner):
     self.name = "Comodo"
     self.speed = AV_SPEED_FAST
     self.pattern = "(.*) ---\> Found .*, Malware Name is (.*)"
+
+  def build_cmd(self, path):
+    parser = self.cfg_parser
+    scan_path = parser.get(self.name, "PATH")
+    scan_args = parser.get(self.name, "ARGUMENTS")
+    args = [scan_path]
+    args.extend(scan_args.replace("$FILE", path).split(" "))
+    return args
+
+#-----------------------------------------------------------------------
+class CKasperskyScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "Kaspersky"
+    # Considered fast because it requires the daemon to be running.
+    # This is why...
+    self.speed = AV_SPEED_FAST
+    self.pattern = r"\d+-\d+-\d+ \d+:\d+:\d+\W(.*)\Wdetected\W(.*)"
 
   def build_cmd(self, path):
     parser = self.cfg_parser
@@ -363,10 +382,12 @@ class CMultiAV:
     self.engines = [CFProtScanner,  CComodoScanner,      CEsetScanner, 
                     CAviraScanner,  CBitDefenderScanner, CSophosScanner,
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
-                    CMcAfeeScanner, CIkarusScanner,      CFSecureScanner]
+                    CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
+                    CKasperskyScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
+    self.engines = []
     self.processes = cpu_count()
     self.cfg = cfg
     self.read_config()
