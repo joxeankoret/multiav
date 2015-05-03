@@ -44,6 +44,7 @@
 #   * Ikarus (Medium, using wine in Linux/Unix)
 #   * F-Secure (Fast)
 #   * Kaspersky (Fast)
+#   * Zoner Antivirus (Fast)
 #
 # Support for the following AV engines is limited to MacOSX and Windows:
 #
@@ -77,6 +78,7 @@ AV_SPEED_ALL = 3 # Run only when all engines must be executed
 AV_SPEED_SLOW = 2
 AV_SPEED_MEDIUM = 1
 AV_SPEED_FAST = 0
+AV_SPEED_ULTRA = -1
 
 #-----------------------------------------------------------------------
 class CAvScanner:
@@ -165,7 +167,7 @@ class CClamScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "ClamAV"
-    self.speed = AV_SPEED_FAST
+    self.speed = AV_SPEED_ULTRA
 
   def scan_one(self, path):
     try:
@@ -196,7 +198,7 @@ class CFProtScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "F-Prot"
-    self.speed = AV_SPEED_FAST
+    self.speed = AV_SPEED_ULTRA
     self.pattern = "\<(.*)\>\s+(.*)"
     self.file_index = 1
     self.malware_index = 0
@@ -313,7 +315,7 @@ class CAvgScanner(CAvScanner):
     self.name = "AVG"
     # Considered fast because it requires the daemon to be running.
     # This is why...
-    self.speed = AV_SPEED_FAST
+    self.speed = AV_SPEED_ULTRA
     self.pattern = "\>{0,1}(.*) \s+[a-z]+\s+[a-z]+\s+(.*)"
 
   def scan(self, path):
@@ -381,7 +383,7 @@ class CZavScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "ZAV"
-    self.speed = AV_SPEED_FAST
+    self.speed = AV_SPEED_ULTRA
     self.pattern = "(.*): INFECTED \[(.*)\]"
 
 #-----------------------------------------------------------------------

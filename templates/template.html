@@ -1,0 +1,40 @@
+$def with (results)
+<html>
+<head>
+<link href="/static/multiav.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div align="center">
+<h1>Joxean Koret's MultiAV</h1>
+</div>
+<div id="vertmenu"> 
+<h1>Navigation</h1>
+<ul>
+<li><a href="/" tabindex="1">Upload</a></li>
+<li><a href="/help" tabindex="2">Help</a></li>
+<li><a href="/about" tabindex="3">About</a></li>
+</ul>
+</div>
+<div id="content">
+<table border="0">
+<tr><td>
+<h2>Scan results</h2>
+  <table>
+    <tr>
+      <th>Antivirus</th>
+      <th>Malware name</th>
+    </tr>
+    $for result in results:
+      <tr>
+        <td>$result.av_name</td>
+        <td>$result.malware_name</td>
+      </tr>
+  </table>
+</td></tr>
+</table>
+</div>
+<div align="center" id="footer">
+<h2>Copyright (c) 2013, 2014 Joxean Koret</h2>
+</div>
+</body>
+</html>
