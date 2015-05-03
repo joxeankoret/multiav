@@ -377,13 +377,21 @@ class CFSecureScanner(CAvScanner):
     self.pattern = "(.*): Infected: (.*) \[[a-z]+\]"
 
 #-----------------------------------------------------------------------
+class CZavScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "ZAV"
+    self.speed = AV_SPEED_FAST
+    self.pattern = "(.*): INFECTED \[(.*)\]"
+
+#-----------------------------------------------------------------------
 class CMultiAV:
   def __init__(self, cfg = "config.cfg"):
     self.engines = [CFProtScanner,  CComodoScanner,      CEsetScanner, 
                     CAviraScanner,  CBitDefenderScanner, CSophosScanner,
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
                     CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
-                    CKasperskyScanner]
+                    CKasperskyScanner, CZavScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
