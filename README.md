@@ -9,21 +9,21 @@ of the command line tools (for ClamAV it uses the https://code.google.com/p/pycl
 It supports a total of 15 AV engines. The list of currently supported
 engines is the following:
 
-   * ClamAV (Fast)
-   * F-Prot (Fast)
+   * ClamAV (Ultra-fast, using the daemon)
+   * F-Prot (Ultra-fast)
    * Comodo (Fast)
    * BitDefender (Medium)
    * ESET (Slow)
    * Avira (Slow)
    * Sophos (Medium)
-   * Avast (Very slow, only enabled when running all the engines)
-   * AVG (Fast)
+   * Avast (Ultra-fast, using the daemon)
+   * AVG (Ultra-fast, using the daemon)
    * DrWeb (Slow)
    * McAfee (Very slow, only enabled when running all the engines)
    * Ikarus (Medium, using Wine in Linux/Unix)
    * F-Secure (Fast)
    * Kaspersky (Fast, only tested under MacOSX)
-   * Zoner Antivirus (Fast)
+   * Zoner Antivirus (Ultra-fast)
 
 This tool have been tested only under Linux. However, it should work equally
 in other Unix based operating systems as well as in Windows as long as the
