@@ -1,4 +1,4 @@
-$def with (results, filename, hashes)
+$def with (rows)
 <html>
 <head>
 <link href="/static/multiav.css" rel="stylesheet" type="text/css">
@@ -19,30 +19,33 @@ $def with (results, filename, hashes)
 </div>
 <div id="content">
 <table border="0">
-<tr><td>
-<h2>Scan results for <i><b>$filename</b></i></h2>
-<br/>
-<b>MD5:</b>$hashes[0]<br/>
-<b>SHA1:</b>$hashes[1]<br/>
-<b>SHA256:</b>$hashes[2]<br/>
-<br/>
-  <table border="1" id="data">
-    <tr>
-      <th>Antivirus</th>
-      <th>Malware name</th>
-    </tr>
-    $for result in results:
+$for results in rows:
+  <tr><td>
+  <h2>Scan results for '<i><b>$results[0]</b></i>'</h2>
+  <b>Date:</b>$results[5]<br/>
+  <b>MD5:</b>$results[2]<br/>
+  <b>SHA1:</b>$results[3]<br/>
+  <b>SHA256:</b>$results[4]<br/>
+  <br/>
+    <table border="1" id="data">
       <tr>
-        <td>$result</td>
-        <td>
-          $if len(results[result].values()) > 0:
-            $:"<br/>".join(results[result].values())
-          $else:
-            -
-        </td>
+        <th>Antivirus</th>
+        <th>Malware name</th>
       </tr>
-  </table>
-</td></tr>
+      $for result in results[1]:
+        <tr>
+          <td>$result</td>
+          <td>
+            $if len(results[1][result].values()) > 0:
+              $:"<br/>".join(results[1][result].values())
+            $else:
+              -
+          </td>
+        </tr>
+    </table>
+    <hr/>
+  </td></tr>
+
 </table>
 </div>
 <div align="center" id="footer">

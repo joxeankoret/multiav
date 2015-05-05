@@ -38,7 +38,7 @@
 #   * ESET (Slow)
 #   * Avira (Slow)
 #   * Sophos (Medium)
-#   * Avast (Slow)
+#   * Avast (Fast)
 #   * AVG (Fast)
 #   * DrWeb (Slow)
 #   * Ikarus (Medium, using wine in Linux/Unix)
@@ -119,7 +119,7 @@ class CAvScanner:
     for match in matches:
       self.results[match[self.file_index]] = match[self.malware_index]
     return len(self.results) > 0
-  
+
   def is_disabled(self):
     parser = self.cfg_parser
     try:
@@ -271,8 +271,8 @@ class CAvastScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "Avast"
-    self.speed = AV_SPEED_ALL
-    self.pattern = "(.*)\s\[infected by: (.*)\]"
+    self.speed = AV_SPEED_ULTRA
+    self.pattern = "(.*)\t(.*)"
 
   def scan(self, path):
     os.putenv("LANG", "C")
@@ -291,20 +291,23 @@ class CMcAfeeScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "McAfee"
-    self.speed = AV_SPEED_ALL
-    self.pattern = "(.*) \.\.\. Found the (.*) [a-z]+ \!\!"
+    self.speed = AV_SPEED_FAST
+    self.pattern = "(.*) \.\.\. Found[:| the]{0,1} (.*) [a-z]+ [\!\!]{0,1}"
     self.pattern2 = "(.*) \.\.\. Found [a-z]+ or variant (.*) \!\!"
 
   def scan(self, path):
     os.putenv("LANG", "C")
     ret = CAvScanner.scan(self, path)
-    
+
     try:
       old_pattern = self.pattern
       self.pattern = self.pattern2
       ret |= CAvScanner.scan(self, path)
     finally:
       self.pattern = old_pattern
+
+    for match in self.results:
+      self.results[match] = self.results[match].strip("the ")
 
     return ret
 
@@ -467,10 +470,12 @@ class CMultiAV:
     f = NamedTemporaryFile(delete=False)
     f.write(buf)
     f.close()
+
     fname = f.name
+    os.chmod(f.name, 436)
 
     try:
-      ret = self.scan(fname)
+      ret = self.scan(fname, max_speed)
     finally:
       os.unlink(fname)
 

@@ -1,4 +1,3 @@
-$def with (results, filename, hashes)
 <html>
 <head>
 <link href="/static/multiav.css" rel="stylesheet" type="text/css">
@@ -20,28 +19,13 @@ $def with (results, filename, hashes)
 <div id="content">
 <table border="0">
 <tr><td>
-<h2>Scan results for <i><b>$filename</b></i></h2>
+<h2>Search</h2>
+<p>Enter the MD5, SHA1, SHA256 or a malware name to search for sample reports. You can use the usual '%' and '?' SQL wildcards.</p>
+<form method="POST" action="/search">
+<label>Text:</label><input type="text" name="q" />
 <br/>
-<b>MD5:</b>$hashes[0]<br/>
-<b>SHA1:</b>$hashes[1]<br/>
-<b>SHA256:</b>$hashes[2]<br/>
-<br/>
-  <table border="1" id="data">
-    <tr>
-      <th>Antivirus</th>
-      <th>Malware name</th>
-    </tr>
-    $for result in results:
-      <tr>
-        <td>$result</td>
-        <td>
-          $if len(results[result].values()) > 0:
-            $:"<br/>".join(results[result].values())
-          $else:
-            -
-        </td>
-      </tr>
-  </table>
+<input type="submit" value="Search"/>
+</form>
 </td></tr>
 </table>
 </div>
