@@ -169,4 +169,105 @@ ARGUMENTS=whatever
 DISABLED=1
 ```
 
-Copyright (c) 2014 Joxean Koret
+# Example Web interface and JSON based web API
+
+Since commit c3828b337b98a450a8b48c764aecbb04cc4d2324, MultiAV distributes a basic example web interface using web.py as well as a simple JSON based API. There is also an example client called "multiav-client.py" that uses the JSON API to scan a file with the multiple engines configured in the MultiAV server.
+
+The current version of the basic JSON based web API exports 3 methods:
+
+   * /api/upload
+   * /api/upload_fast
+   * /api/search
+
+## API /api/upload
+
+This API uploads and analyses with all the configured engines, regardless of how fast or slow they are, the given sample file.
+
+Example usage:
+```python
+import os
+import json
+import pprint
+import postfile
+
+host = "multi-av-host-ip:8080"
+selector = "/api/upload"
+filename = "/path/to/eicar.com.txt"
+file_buf = open(filename, "rb").read()
+files = [("file_upload", os.path.basename(filename), file_buf)]
+json_txt = postfile.post_multipart(host, selector, [], files)
+pprint.pprint(json.loads(json_txt))
+```
+
+Example output:
+```
+{u'AVG': {u'/tmp/tmpt1WoID': u'EICAR_Test'},
+ u'Avast': {u'/tmp/tmpt1WoID': u'EICAR Test-NOT virus!!!'},
+ u'BitDefender': {u'/tmp/tmpt1WoID': u'EICAR-Test-File (not a virus)'},
+ u'ClamAV': {u'/tmp/tmpt1WoID': u'Eicar-Test-Signature'},
+ u'Comodo': {u'/tmp/tmpt1WoID': u'Malware'},
+ u'ESET': {u'/tmp/tmpt1WoID': u'Eicar test file'},
+ u'F-Prot': {u'/tmp/tmpt1WoID': u'EICAR_Test_File (exact)'},
+ u'Ikarus': {u'/tmp/tmpt1WoID': u'EICAR-ANTIVIRUS-TESTFILE'},
+ u'McAfee': {u'/tmp/tmpt1WoID': u'EICAR test file NOT'},
+ u'Kaspersky': {u'/tmp/tmpt1WoID': u'EICAR-Test-File'},
+ u'Sophos': {u'/tmp/tmpt1WoID': u'EICAR-AV-Test'},
+ u'ZAV': {u'/tmp/tmpt1WoID': u'EICAR.Test.File-NoVirus'}}
+```
+
+## API /api/upload_fast
+
+This API uploads and analyses with only the fastest configured AV engines (Avast, AVG, ClamAV, F-Prot an Zoner Antivirus) the given sample file.
+
+Example usage:
+```python
+import os
+import json
+import pprint
+import postfile
+
+host = "multi-av-host-ip:8080"
+selector = "/api/upload_fast"
+filename = "/path/to/eicar.com.txt"
+file_buf = open(filename, "rb").read()
+files = [("file_upload", os.path.basename(filename), file_buf)]
+json_txt = postfile.post_multipart(host, selector, [], files)
+pprint.pprint(json.loads(json_txt))
+```
+
+Example output:
+```
+{u'AVG': {u'/tmp/tmpXveafr': u'EICAR_Test'},
+ u'Avast': {u'/tmp/tmpXveafr': u'EICAR Test-NOT virus!!!'},
+ u'ClamAV': {u'/tmp/tmpXveafr': u'Eicar-Test-Signature'},
+ u'F-Prot': {u'/tmp/tmpXveafr': u'EICAR_Test_File (exact)'},
+ u'ZAV': {u'/tmp/tmpXveafr': u'EICAR.Test.File-NoVirus'}}
+```
+
+## API /api/search
+
+Returns the previously generated report, if any, of the given MD5, SHA1 or SHA256 cryptographic hash.
+
+Example usage:
+```
+import json
+import pprint
+import urllib2
+
+report = urllib2.urlopen("http://multiav-ip:8080/api/search?file_hash=44d88612fea8a8f36de82e1278abb02f").read()
+pprint.pprint(json.loads(report))
+```
+
+Example output:
+```
+{u'date': u'Mon May  4 19:50:22 2015',
+ u'id': 6494,
+ u'infected': 1,
+ u'md5': u'44d88612fea8a8f36de82e1278abb02f',
+ u'name': u'eicar.com.txt',
+ u'report': u'{"F-Prot": {"/tmp/tmpUK1qEI": "EICAR_Test_File (exact)"}, "Avast": {"/tmp/tmpUK1qEI": "EICAR Test-NOT virus!!!"}, "ClamAV": {"/tmp/tmpUK1qEI": "Eicar-Test-Signature"}, "McAfee": {}, "ZAV": {"/tmp/tmpUK1qEI": "EICAR.Test.File-NoVirus"}, "AVG": {"/tmp/tmpUK1qEI": "EICAR_Test"}}',
+ u'sha1': u'3395856ce81f2b7382dee72602f798b642f14140',
+ u'sha256': u'275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f'}
+```
+
+Copyright (c) 2014, 2015 Joxean Koret
