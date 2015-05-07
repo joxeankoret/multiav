@@ -171,7 +171,7 @@ DISABLED=1
 
 # Example Web interface and JSON based web API
 
-Since commit c3828b337b98a450a8b48c764aecbb04cc4d2324, MultiAV distributes a basic example web interface using web.py as well as a simple JSON based API. There is also an example client called "multiav-client.py" that uses the JSON API to scan a file with the multiple engines configured in the MultiAV server.
+Since commit c3828b337b98a450a8b48c764aecbb04cc4d2324, MultiAV distributes a basic example web interface using web.py that offers a simple JSON based API. There is also an example client called "multiav-client.py" that uses the JSON API to scan a file with the multiple engines configured in the MultiAV server.
 
 The current version of the basic JSON based web API exports 3 methods:
 
