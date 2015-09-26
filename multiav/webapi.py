@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+import json
+import time
 
-import sys
 import web
+from hashlib import md5, sha1, sha256
+from multiav.core import CMultiAV, AV_SPEED_ULTRA
 
 urls = (
     '/', 'index',
@@ -15,12 +17,6 @@ urls = (
 )
 
 app = web.application(urls, globals())
-
-import json
-import time
-
-from hashlib import md5, sha1, sha256
-from multiav.core import CMultiAV, AV_SPEED_ULTRA
 
 
 # -----------------------------------------------------------------------
@@ -211,6 +207,3 @@ class upload:
     # And show the results
     render = web.template.render('templates')
     return render.results(ret, filename, hashes)
-
-if __name__ == "__main__":
-    app.run()

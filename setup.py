@@ -58,5 +58,5 @@ setup(
     scripts=[
         'multiav/scripts/multiav-scan.py',
         'multiav/scripts/multiav-client.py',
-        'multiav/scripts/webapi.py']
+        'multiav/scripts/runserver.py']
 )
