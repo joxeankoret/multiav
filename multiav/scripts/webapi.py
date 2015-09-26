@@ -20,9 +20,10 @@ import json
 import time
 
 from hashlib import md5, sha1, sha256
-from multiav import CMultiAV, AV_SPEED_ULTRA, AV_SPEED_FAST
+from multiav.core import CMultiAV, AV_SPEED_ULTRA
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class CDbSamples:
   def __init__(self):
     self.db = web.database(dbn='sqlite', db='multiav.db')
@@ -75,7 +76,8 @@ class CDbSamples:
     rows = self.db.select('samples', where=where, order="date desc", limit=20)
     return rows
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class last:
   def GET(self):
     db = CDbSamples()
@@ -87,7 +89,8 @@ class last:
     render = web.template.render('templates')
     return render.search_results(l)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class search:
   def GET(self):
     render = web.template.render('templates')
@@ -109,19 +112,22 @@ class search:
       return render.error("No match")
     return render.search_results(l)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class index:
   def GET(self):
     render = web.template.render('templates')
     return render.index()
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class about:
   def GET(self):
     render = web.template.render('templates')
     return render.about()
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class api_search:
   def GET(self):
     return self.POST()
@@ -137,7 +143,8 @@ class api_search:
       return json.dumps(row)
     return '{"error": "Not found."}'
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class api_upload:
   def POST(self):
     i = web.input(file_upload={})
@@ -155,7 +162,8 @@ class api_upload:
     db_api.insert_sample(filename, buf, report)
     return json.dumps(report)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class api_upload_fast:
   def POST(self):
     i = web.input(file_upload={}, speed=AV_SPEED_ULTRA)
@@ -175,7 +183,8 @@ class api_upload_fast:
 
     return json.dumps(report)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class upload:
   def POST(self):
     i = web.input(file_upload={})
