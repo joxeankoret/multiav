@@ -1,3 +1,5 @@
+import os
+import sys
 import json
 import time
 
@@ -17,6 +19,7 @@ urls = (
 )
 
 app = web.application(urls, globals())
+TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
 
 
 # -----------------------------------------------------------------------
@@ -82,18 +85,18 @@ class last:
     for row in rows:
       l.append([row.name, json.loads(row.report), row.md5, row.sha1, row.sha256, row.date])
 
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.search_results(l)
 
 
 # -----------------------------------------------------------------------
 class search:
   def GET(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.search()
 
   def POST(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     i = web.input(q="")
     if i["q"] == "":
       return render.search()
@@ -112,14 +115,14 @@ class search:
 # -----------------------------------------------------------------------
 class index:
   def GET(self):
-    render = web.template.render('templates')
+    render = web.template.render()
     return render.index()
 
 
 # -----------------------------------------------------------------------
 class about:
   def GET(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.about()
 
 
@@ -205,5 +208,5 @@ class upload:
     db_api.insert_sample(filename, buf, ret)
 
     # And show the results
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.results(ret, filename, hashes)
