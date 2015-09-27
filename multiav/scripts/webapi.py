@@ -31,7 +31,7 @@ class CDbSamples:
 
   def create_schema(self):
     self.db.query("""create table if not exists samples(
-                    id integer not null primary key autoincrement, 
+                    id integer not null primary key autoincrement,
                     name text,
                     md5 text unique,
                     sha1 text unique,
@@ -98,13 +98,13 @@ class search:
     i = web.input(q="")
     if i["q"] == "":
       return render.search()
-    
+
     db = CDbSamples()
     rows = db.search_samples(i["q"])
     l = []
     for row in rows:
       l.append([row.name, json.loads(row.report), row.md5, row.sha1, row.sha256, row.date])
-    
+
     if len(l) == 0:
       return render.error("No match")
     return render.search_results(l)
@@ -150,7 +150,7 @@ class api_upload:
     # Scan the file
     av = CMultiAV()
     report = av.scan_buffer(buf)
-    
+
     db_api = CDbSamples()
     db_api.insert_sample(filename, buf, report)
     return json.dumps(report)

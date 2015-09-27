@@ -56,7 +56,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     scripts=[
-        'multiav/scripts/multiav.py',
+        'multiav/scripts/multiav-scan.py',
         'multiav/scripts/multiav-client.py',
         'multiav/scripts/webapi.py']
 )
