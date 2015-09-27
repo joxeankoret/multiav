@@ -15,7 +15,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
-    # TODO: put package requirements here
+    'web.py',
+    'pyClamd',
 ]
 
 test_requirements = [
@@ -53,5 +54,9 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    tests_require=test_requirements,
+    scripts=[
+        'multiav/scripts/multiav.py',
+        'multiav/scripts/multiav-client.py',
+        'multiav/scripts/webapi.py']
 )
