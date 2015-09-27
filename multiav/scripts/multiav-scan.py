@@ -8,22 +8,22 @@
 # License:
 #
 # MultiAV is free software: you can redistribute it and/or modify it
-# under the terms of the GNU Lesser Public License as published by the 
+# under the terms of the GNU Lesser Public License as published by the
 # Free Software Foundation, either version 3 of the License, or (at your
 # option) any later version.
-# 
+#
 # MultiAV is distributed in the hope that it will be  useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU Lesser Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser Public License
-# along with DoctestAll.  If not, see 
+# along with DoctestAll.  If not, see
 # <http://www.gnu.org/licenses/>.
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
-# 
+#
 # Description:
 #
 # This script implements a very basic wrapper around various AV engines
@@ -176,7 +176,7 @@ class CClamScanner(CAvScanner):
     except:
       pass
 
-  def scan_dir(self, path):    
+  def scan_dir(self, path):
     for root, dirs, files in os.walk(path, topdown=False):
       for name in files:
         self.scan_one(os.path.join(root, name))
@@ -350,7 +350,7 @@ class CIkarusScanner(CAvScanner):
     self.speed = AV_SPEED_MEDIUM
     # Horrible, isn't it?
     self.pattern = "(.*) - Signature \d+ '(.*)' found"
-  
+
   def scan(self, path):
     cmd = self.build_cmd(path)
     f = NamedTemporaryFile(delete=False)
@@ -392,7 +392,7 @@ class CZavScanner(CAvScanner):
 #-----------------------------------------------------------------------
 class CMultiAV:
   def __init__(self, cfg = "config.cfg"):
-    self.engines = [CFProtScanner,  CComodoScanner,      CEsetScanner, 
+    self.engines = [CFProtScanner,  CComodoScanner,      CEsetScanner,
                     CAviraScanner,  CBitDefenderScanner, CSophosScanner,
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
                     CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
@@ -465,7 +465,7 @@ class CMultiAV:
     if q is not None:
       q.put(results)
     return results
-  
+
   def scan_buffer(self, buf, max_speed=AV_SPEED_ALL):
     f = NamedTemporaryFile(delete=False)
     f.write(buf)
@@ -485,7 +485,7 @@ class CMultiAV:
 def main(path):
   multi_av = CMultiAV()
   ret = multi_av.scan(path, AV_SPEED_ALL)
-  
+
   import pprint
   pprint.pprint(ret)
 
