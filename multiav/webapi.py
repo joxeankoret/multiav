@@ -19,7 +19,12 @@ urls = (
 )
 
 app = web.application(urls, globals())
+ROOT_PATH = os.path.dirname(__file__)
+CURRENT_PATH = os.getcwd()
 TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
+
+if not os.path.isdir(os.path.join(CURRENT_PATH, 'static')):
+    raise Exception('runserver.py must be run in the directory {0}'.format(ROOT_PATH))
 
 
 # -----------------------------------------------------------------------
