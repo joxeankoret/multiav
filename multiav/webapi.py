@@ -115,7 +115,7 @@ class search:
 # -----------------------------------------------------------------------
 class index:
   def GET(self):
-    render = web.template.render()
+    render = web.template.render(TEMPLATE_PATH)
     return render.index()
 
 
