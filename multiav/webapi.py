@@ -1,7 +1,11 @@
-#!/usr/bin/python
-
+import os
 import sys
+import json
+import time
+
 import web
+from hashlib import md5, sha1, sha256
+from multiav.core import CMultiAV, AV_SPEED_ULTRA
 
 urls = (
     '/', 'index',
@@ -15,14 +19,15 @@ urls = (
 )
 
 app = web.application(urls, globals())
+ROOT_PATH = os.path.dirname(__file__)
+CURRENT_PATH = os.getcwd()
+TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
 
-import json
-import time
+if not os.path.isdir(os.path.join(CURRENT_PATH, 'static')):
+    raise Exception('runserver.py must be run in the directory {0}'.format(ROOT_PATH))
 
-from hashlib import md5, sha1, sha256
-from multiav import CMultiAV, AV_SPEED_ULTRA, AV_SPEED_FAST
 
-#-----------------------------------------------------------------------
+# -----------------------------------------------------------------------
 class CDbSamples:
   def __init__(self):
     self.db = web.database(dbn='sqlite', db='multiav.db')
@@ -31,7 +36,7 @@ class CDbSamples:
 
   def create_schema(self):
     self.db.query("""create table if not exists samples(
-                    id integer not null primary key autoincrement, 
+                    id integer not null primary key autoincrement,
                     name text,
                     md5 text unique,
                     sha1 text unique,
@@ -75,7 +80,8 @@ class CDbSamples:
     rows = self.db.select('samples', where=where, order="date desc", limit=20)
     return rows
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class last:
   def GET(self):
     db = CDbSamples()
@@ -84,44 +90,48 @@ class last:
     for row in rows:
       l.append([row.name, json.loads(row.report), row.md5, row.sha1, row.sha256, row.date])
 
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.search_results(l)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class search:
   def GET(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.search()
 
   def POST(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     i = web.input(q="")
     if i["q"] == "":
       return render.search()
-    
+
     db = CDbSamples()
     rows = db.search_samples(i["q"])
     l = []
     for row in rows:
       l.append([row.name, json.loads(row.report), row.md5, row.sha1, row.sha256, row.date])
-    
+
     if len(l) == 0:
       return render.error("No match")
     return render.search_results(l)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class index:
   def GET(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.index()
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class about:
   def GET(self):
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.about()
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class api_search:
   def GET(self):
     return self.POST()
@@ -137,7 +147,8 @@ class api_search:
       return json.dumps(row)
     return '{"error": "Not found."}'
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class api_upload:
   def POST(self):
     i = web.input(file_upload={})
@@ -150,12 +161,13 @@ class api_upload:
     # Scan the file
     av = CMultiAV()
     report = av.scan_buffer(buf)
-    
+
     db_api = CDbSamples()
     db_api.insert_sample(filename, buf, report)
     return json.dumps(report)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class api_upload_fast:
   def POST(self):
     i = web.input(file_upload={}, speed=AV_SPEED_ULTRA)
@@ -175,7 +187,8 @@ class api_upload_fast:
 
     return json.dumps(report)
 
-#-----------------------------------------------------------------------
+
+# -----------------------------------------------------------------------
 class upload:
   def POST(self):
     i = web.input(file_upload={})
@@ -200,8 +213,5 @@ class upload:
     db_api.insert_sample(filename, buf, ret)
 
     # And show the results
-    render = web.template.render('templates')
+    render = web.template.render(TEMPLATE_PATH)
     return render.results(ret, filename, hashes)
-
-if __name__ == "__main__":
-    app.run()

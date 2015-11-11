@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import os
 import sys
 import json
 import pprint
 
-import postfile
+from multiav import postfile
 
 #-----------------------------------------------------------------------
 class CMultiAvUploader:

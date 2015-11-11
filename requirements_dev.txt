@@ -1,0 +1,4 @@
+bumpversion==0.5.3
+wheel==0.23.0
+web.py==0.37
+pyClamd==0.3.15
