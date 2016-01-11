@@ -40,10 +40,12 @@
 #   * Avast (Fast)
 #   * AVG (Fast)
 #   * DrWeb (Slow)
+#   * McAfee (Very slow, only enabled when running all the engines)
 #   * Ikarus (Medium, using wine in Linux/Unix)
 #   * F-Secure (Fast)
 #   * Kaspersky (Fast)
 #   * Zoner Antivirus (Fast)
+#   * MicroWorld-eScan (Fast)
 #
 # Support for the following AV engines is limited to MacOSX and Windows:
 #
@@ -296,6 +298,35 @@ class CDrWebScanner(CAvScanner):
     self.pattern = "\>{0,1}(.*) infected with (.*)"
 
 
+#-----------------------------------------------------------------------
+class CMicroWorldeScanScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "MicroWorld-eScan"
+    self.speed = AV_SPEED_FAST
+    self.pattern = '(.*)\[INFECTED\](.*)'
+
+  def scan(self, path):
+    if self.pattern is None:
+      Exception("Not implemented")
+    
+    try:
+      cmd = self.build_cmd(path)
+    except: # There is no entry in the *.cfg file for this AV engine?
+      pass
+    
+    try:
+      output = check_output(cmd)
+    
+    except CalledProcessError as e:
+      output = e.output
+    
+    matches = re.findall(self.pattern, output, re.IGNORECASE | re.MULTILINE)
+    for match in matches:
+      self.results[match[self.file_index].rstrip()] = match[self.malware_index]
+    return len(self.results) > 0
+
+
 # -----------------------------------------------------------------------
 class CMcAfeeScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -411,7 +442,7 @@ class CMultiAV:
                     CAviraScanner,  CBitDefenderScanner, CSophosScanner,
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
                     CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
-                    CKasperskyScanner, CZavScanner]
+                    CKasperskyScanner, CZavScanner,      CMicroWorldeScanScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
