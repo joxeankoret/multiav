@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# -----------------------------------------------------------------------
+#-----------------------------------------------------------------------
 # MultiAV scanner wrapper version 0.0.1
 # Copyright (c) 2014, Joxean Koret
 #
@@ -57,7 +57,7 @@
 #   * Parallel scan, by default, based on the number of CPUs.
 #   * Analysis by AV engine speed.
 #
-# -----------------------------------------------------------------------
+#-----------------------------------------------------------------------
 
 import os
 import re
@@ -80,7 +80,6 @@ AV_SPEED_SLOW = 2
 AV_SPEED_MEDIUM = 1
 AV_SPEED_FAST = 0
 AV_SPEED_ULTRA = -1
-
 
 # -----------------------------------------------------------------------
 class CAvScanner:
@@ -130,7 +129,6 @@ class CAvScanner:
     except:
       return False
 
-
 #-----------------------------------------------------------------------
 class CComodoScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -146,7 +144,6 @@ class CComodoScanner(CAvScanner):
     args = [scan_path]
     args.extend(scan_args.replace("$FILE", path).split(" "))
     return args
-
 
 #-----------------------------------------------------------------------
 class CCyrenScanner(CAvScanner):
@@ -167,7 +164,6 @@ class CCyrenScanner(CAvScanner):
 
     try:
         output = check_output(cmd)
-
     except CalledProcessError as e:
         output = e.output
 
@@ -175,7 +171,6 @@ class CCyrenScanner(CAvScanner):
     for match in matches:
       self.results[match[self.file_index].strip()] = match[self.malware_index]
     return len(self.results) > 0
-
 
 #-----------------------------------------------------------------------
 class CKasperskyScanner(CAvScanner):
@@ -194,7 +189,6 @@ class CKasperskyScanner(CAvScanner):
     args = [scan_path]
     args.extend(scan_args.replace("$FILE", path).split(" "))
     return args
-
 
 #-----------------------------------------------------------------------
 class CClamScanner(CAvScanner):
@@ -227,7 +221,6 @@ class CClamScanner(CAvScanner):
       self.scan_one(path)
     return len(self.results) == 0
 
-
 #-----------------------------------------------------------------------
 class CFProtScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -237,7 +230,6 @@ class CFProtScanner(CAvScanner):
     self.pattern = "\<(.*)\>\s+(.*)"
     self.file_index = 1
     self.malware_index = 0
-
 
 #-----------------------------------------------------------------------
 class CAviraScanner(CAvScanner):
@@ -253,7 +245,6 @@ class CAviraScanner(CAvScanner):
     os.putenv("LANG", "C")
     return CAvScanner.scan(self, path)
 
-
 #-----------------------------------------------------------------------
 class CBitDefenderScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -265,7 +256,6 @@ class CBitDefenderScanner(CAvScanner):
   def scan(self, path):
     os.putenv("LANG", "C")
     return CAvScanner.scan(self, path)
-
 
 # -----------------------------------------------------------------------
 class CEsetScanner(CAvScanner):
@@ -290,7 +280,6 @@ class CEsetScanner(CAvScanner):
         self.results[match[0]] = match[1][:match[1].find('", ')]
     return len(self.results) > 0
 
-
 # -----------------------------------------------------------------------
 class CSophosScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -305,7 +294,6 @@ class CSophosScanner(CAvScanner):
     os.putenv("LANG", "C")
     return CAvScanner.scan(self, path)
 
-
 # -----------------------------------------------------------------------
 class CAvastScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -318,7 +306,6 @@ class CAvastScanner(CAvScanner):
     os.putenv("LANG", "C")
     return CAvScanner.scan(self, path)
 
-
 # -----------------------------------------------------------------------
 class CDrWebScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -327,9 +314,8 @@ class CDrWebScanner(CAvScanner):
     self.speed = AV_SPEED_SLOW
     self.pattern = "\>{0,1}(.*) infected with (.*)"
 
-
 #-----------------------------------------------------------------------
-class CMicroWorldeScanScanner(CAvScanner):
+class CEScanScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
     self.name = "MicroWorld-eScan"
@@ -347,7 +333,6 @@ class CMicroWorldeScanScanner(CAvScanner):
     
     try:
       output = check_output(cmd)
-    
     except CalledProcessError as e:
       output = e.output
     
@@ -355,7 +340,6 @@ class CMicroWorldeScanScanner(CAvScanner):
     for match in matches:
       self.results[match[self.file_index].rstrip()] = match[self.malware_index]
     return len(self.results) > 0
-
 
 # -----------------------------------------------------------------------
 class CMcAfeeScanner(CAvScanner):
@@ -381,7 +365,6 @@ class CMcAfeeScanner(CAvScanner):
       self.results[match] = self.results[match].strip("the ")
 
     return ret
-
 
 # -----------------------------------------------------------------------
 class CAvgScanner(CAvScanner):
@@ -414,7 +397,6 @@ class CAvgScanner(CAvScanner):
         self.results[match[0]] = match[1]
     return len(self.results) > 0
 
-
 # -----------------------------------------------------------------------
 class CIkarusScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -446,7 +428,6 @@ class CIkarusScanner(CAvScanner):
         self.results[match[0]] = match[1]
     return len(self.results) > 0
 
-
 # -----------------------------------------------------------------------
 class CFSecureScanner(CAvScanner):
   def __init__(self, cfg_parser):
@@ -454,7 +435,6 @@ class CFSecureScanner(CAvScanner):
     self.name = "F-Secure"
     self.speed = AV_SPEED_FAST
     self.pattern = "(.*): Infected: (.*) \[[a-z]+\]"
-
 
 # -----------------------------------------------------------------------
 class CZavScanner(CAvScanner):
@@ -464,7 +444,6 @@ class CZavScanner(CAvScanner):
     self.speed = AV_SPEED_ULTRA
     self.pattern = "(.*): INFECTED \[(.*)\]"
 
-
 # -----------------------------------------------------------------------
 class CMultiAV:
   def __init__(self, cfg = "config.cfg"):
@@ -472,7 +451,7 @@ class CMultiAV:
                     CAviraScanner,  CBitDefenderScanner, CSophosScanner,
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
                     CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
-                    CKasperskyScanner, CZavScanner,      CMicroWorldeScanScanner,
+                    CKasperskyScanner, CZavScanner,      CEScanScanner,
                     CCyrenScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
