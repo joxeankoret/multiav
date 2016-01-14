@@ -46,6 +46,7 @@
 #   * Kaspersky (Fast)
 #   * Zoner Antivirus (Fast)
 #   * MicroWorld-eScan (Fast)
+#   * Cyren (Fast)
 #
 # Support for the following AV engines is limited to MacOSX and Windows:
 #
@@ -145,6 +146,35 @@ class CComodoScanner(CAvScanner):
     args = [scan_path]
     args.extend(scan_args.replace("$FILE", path).split(" "))
     return args
+
+
+#-----------------------------------------------------------------------
+class CCyrenScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.name = "Cyren"
+    self.speed = AV_SPEED_ULTRA
+    self.pattern = "Found:(.*)[\s]{3,}(.*)"
+
+  def scan(self, path):
+    if self.pattern is None:
+        Exception("Not implemented")
+
+    try:
+        cmd = self.build_cmd(path)
+    except: # There is no entry in the *.cfg file for this AV engine?
+        pass
+
+    try:
+        output = check_output(cmd)
+
+    except CalledProcessError as e:
+        output = e.output
+
+    matches = re.findall(self.pattern, output, re.IGNORECASE|re.MULTILINE)
+    for match in matches:
+      self.results[match[self.file_index].strip()] = match[self.malware_index]
+    return len(self.results) > 0
 
 
 #-----------------------------------------------------------------------
@@ -442,7 +472,8 @@ class CMultiAV:
                     CAviraScanner,  CBitDefenderScanner, CSophosScanner,
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
                     CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
-                    CKasperskyScanner, CZavScanner,      CMicroWorldeScanScanner]
+                    CKasperskyScanner, CZavScanner,      CMicroWorldeScanScanner,
+                    CCyrenScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
