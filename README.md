@@ -272,4 +272,4 @@ Example output:
  u'sha256': u'275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f'}
 ```
 
-Copyright (c) 2014, 2015 Joxean Koret
+Copyright (c) 2014-2016 Joxean Koret
