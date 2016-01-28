@@ -6,7 +6,7 @@ engines simultaneously. It uses, with the only exception of ClamAV, the
 command line AV scanners and extracts the malware names from the output
 of the command line tools (for ClamAV it uses the https://code.google.com/p/pyclamd/ extension).
 
-It supports a total of 17 AV engines. The list of currently supported
+It supports a total of 18 AV engines. The list of currently supported
 engines is the following:
 
    * ClamAV (Ultra-fast, using the daemon)
@@ -26,6 +26,7 @@ engines is the following:
    * Zoner Antivirus (Ultra-fast)
    * MicroWorld-eScan (Fast)
    * Cyren (Ultra-fast)
+   * QuickHeal (Fast)
 
 This tool have been tested only under Linux. However, it should work equally
 in other Unix based operating systems as well as in Windows as long as the
