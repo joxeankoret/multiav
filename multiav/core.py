@@ -47,6 +47,7 @@
 #   * Zoner Antivirus (Fast)
 #   * MicroWorld-eScan (Fast)
 #   * Cyren (Fast)
+#   * QuickHeal (Fast)
 #
 # Support for the following AV engines is limited to MacOSX and Windows:
 #
@@ -437,6 +438,54 @@ class CFSecureScanner(CAvScanner):
     self.pattern = "(.*): Infected: (.*) \[[a-z]+\]"
 
 # -----------------------------------------------------------------------
+class CQuickHealScanner(CAvScanner):
+  def __init__(self, cfg_parser):
+    CAvScanner.__init__(self, cfg_parser)
+    self.cfg_parser = cfg_parser
+    self.name = 'QuickHeal'
+    self.speed = AV_SPEED_FAST
+    self.file_index = 1
+    self.malware_index = 2
+    self.pattern = '(Scanning : |Archive  : )(.*)\nInfected[\s]+:[\s]+\((.*)\)'    
+
+  def build_cmd(self, path):
+    parser = self.cfg_parser
+    scan_path = parser.get(self.name, "PATH")
+    scan_args = parser.get(self.name, "ARGUMENTS")
+    args = [scan_path]
+    args.extend(scan_args.replace("$FILE", path).split(" "))
+    return args
+
+  def scan(self, path):
+    f = NamedTemporaryFile(delete=False)
+    f.close()
+    fname = f.name
+
+    if self.pattern is None:
+      Exception("Not implemented")
+
+    try:
+      cmd = self.build_cmd(path)
+    
+    except: # There is no entry in the *.cfg file for this AV engine?
+      pass
+
+    try:
+      cmd.append("-REPORT=%s" % fname)
+      output = check_output(cmd)
+
+    except CalledProcessError as e:
+      output = e.output
+
+    output = open(fname, "rb").read()
+    os.unlink(fname)
+    matches = re.findall(self.pattern, output, re.IGNORECASE|re.MULTILINE)
+    for match in matches:
+      self.results[match[self.file_index].rstrip('\r')] = match[self.malware_index]    
+
+    return len(self.results) > 0
+
+# -----------------------------------------------------------------------
 class CZavScanner(CAvScanner):
   def __init__(self, cfg_parser):
     CAvScanner.__init__(self, cfg_parser)
@@ -452,7 +501,7 @@ class CMultiAV:
                     CAvastScanner,  CAvgScanner,         CDrWebScanner,
                     CMcAfeeScanner, CIkarusScanner,      CFSecureScanner,
                     CKasperskyScanner, CZavScanner,      CEScanScanner,
-                    CCyrenScanner]
+                    CCyrenScanner,  CQuickHealScanner]
     if has_clamd:
       self.engines.append(CClamScanner)
 
