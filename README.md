@@ -22,7 +22,7 @@ engines is the following:
    * McAfee (Very slow, only enabled when running all the engines)
    * Ikarus (Medium, using Wine in Linux/Unix)
    * F-Secure (Fast)
-   * Kaspersky (Fast, only tested under MacOSX)
+   * Kaspersky (Fast, tested under MacOSX & Linux)
    * Zoner Antivirus (Ultra-fast)
    * MicroWorld-eScan (Fast)
    * Cyren (Ultra-fast)

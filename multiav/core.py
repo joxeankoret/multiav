@@ -49,9 +49,7 @@
 #   * Cyren (Fast)
 #   * QuickHeal (Fast)
 #
-# Support for the following AV engines is limited to MacOSX and Windows:
-#
-#   * Kaspersky
+# Support for the Kaspersky AV engine includes MacOSX, Windows, and Linux
 #
 # Features:
 #
@@ -182,14 +180,50 @@ class CKasperskyScanner(CAvScanner):
     # This is why...
     self.speed = AV_SPEED_FAST
     self.pattern = r"\d+-\d+-\d+ \d+:\d+:\d+\W(.*)\Wdetected\W(.*)"
+    self.pattern2 = '(.*)(INFECTED|SUSPICION UDS:|SUSPICION HEUR:|WARNING HEUR:)(.*)'    
 
   def build_cmd(self, path):
     parser = self.cfg_parser
     scan_path = parser.get(self.name, "PATH")
     scan_args = parser.get(self.name, "ARGUMENTS")
     args = [scan_path]
-    args.extend(scan_args.replace("$FILE", path).split(" "))
+    ver = os.path.basename(scan_path)
+    if ver == "kavscanner":
+        args.extend(scan_args.split(" "))
+        args.append(path)      
+    elif ver == "kav":
+        args.extend(scan_args.replace("$FILE", path).split(" "))
     return args
+
+  def scan(self, path):
+    if self.pattern is None:
+        Exception("Not implemented")
+
+    try:
+        cmd = self.build_cmd(path)
+    except: # There is no entry in the *.cfg file for this AV engine?
+        pass
+
+    try: # stderr=devnull because kavscanner writes socket info
+        with open(os.devnull, "w") as devnull:      
+            output = check_output(cmd, stderr=devnull)
+
+    except CalledProcessError as e:
+        output = e.output
+    ver = os.path.basename(cmd.pop(0))
+    if ver == "kavscanner":
+        self.file_index = 0
+        self.malware_index = 2
+        matches = re.findall(self.pattern2, output, re.IGNORECASE|re.MULTILINE)
+        for match in matches:
+          self.results[match[self.file_index].split('\x08')[0].rstrip()] =\
+              match[self.malware_index].lstrip().rstrip()
+    elif ver == "kav":
+        matches = re.findall(self.pattern, output, re.IGNORECASE|re.MULTILINE)
+        for match in matches:
+          self.results[match[self.file_index]] = match[self.malware_index]
+
+    return len(self.results) > 0
 
 #-----------------------------------------------------------------------
 class CClamScanner(CAvScanner):
