@@ -563,14 +563,12 @@ class CMultiAV:
         p.start()
         running.append(p)
 
-      i = 0
+      newrunning = []
       for p in list(running):
         p.join(0.1)
-        if not p.is_alive():
-          del running[i]
-          i -= 1
-        else:
-          i += 1
+        if p.is_alive():
+          newrunning.append(p)
+      running = newrunning
 
     results = {}
     while not q.empty():
