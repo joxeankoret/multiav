@@ -15,7 +15,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
-    'web.py',
+    # 'web.py', # uncomment to use the web interface
+    'configparser',
     'pyClamd',
 ]
 
@@ -25,7 +26,7 @@ test_requirements = [
 
 setup(
     name='multiav',
-    version='0.1.0',
+    version='0.2.0',
     description="MultiAV scanner with Python and JSON API",
     long_description=readme + '\n\n' + history,
     author="Joxean Koret",

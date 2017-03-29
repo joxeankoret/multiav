@@ -61,7 +61,7 @@
 import os
 import re
 import codecs
-import ConfigParser
+import configparser as ConfigParser
 
 from tempfile import NamedTemporaryFile
 from subprocess import check_output, CalledProcessError
@@ -180,7 +180,7 @@ class CKasperskyScanner(CAvScanner):
     # This is why...
     self.speed = AV_SPEED_FAST
     self.pattern = r"\d+-\d+-\d+ \d+:\d+:\d+\W(.*)\Wdetected\W(.*)"
-    self.pattern2 = '(.*)(INFECTED|SUSPICION UDS:|SUSPICION HEUR:|WARNING HEUR:)(.*)'    
+    self.pattern2 = '(.*)(INFECTED|SUSPICION UDS:|SUSPICION HEUR:|WARNING HEUR:)(.*)'
 
   def build_cmd(self, path):
     parser = self.cfg_parser
@@ -190,7 +190,7 @@ class CKasperskyScanner(CAvScanner):
     ver = os.path.basename(scan_path)
     if ver == "kavscanner":
         args.extend(scan_args.split(" "))
-        args.append(path)      
+        args.append(path)
     elif ver == "kav":
         args.extend(scan_args.replace("$FILE", path).split(" "))
     return args
@@ -205,7 +205,7 @@ class CKasperskyScanner(CAvScanner):
         pass
 
     try: # stderr=devnull because kavscanner writes socket info
-        with open(os.devnull, "w") as devnull:      
+        with open(os.devnull, "w") as devnull:
             output = check_output(cmd, stderr=devnull)
 
     except CalledProcessError as e:
@@ -360,17 +360,17 @@ class CEScanScanner(CAvScanner):
   def scan(self, path):
     if self.pattern is None:
       Exception("Not implemented")
-    
+
     try:
       cmd = self.build_cmd(path)
     except: # There is no entry in the *.cfg file for this AV engine?
       pass
-    
+
     try:
       output = check_output(cmd)
     except CalledProcessError as e:
       output = e.output
-    
+
     matches = re.findall(self.pattern, output, re.IGNORECASE | re.MULTILINE)
     for match in matches:
       self.results[match[self.file_index].rstrip()] = match[self.malware_index]
@@ -480,7 +480,7 @@ class CQuickHealScanner(CAvScanner):
     self.speed = AV_SPEED_FAST
     self.file_index = 1
     self.malware_index = 2
-    self.pattern = '(Scanning : |Archive  : )(.*)\nInfected[\s]+:[\s]+\((.*)\)'    
+    self.pattern = '(Scanning : |Archive  : )(.*)\nInfected[\s]+:[\s]+\((.*)\)'
 
   def build_cmd(self, path):
     parser = self.cfg_parser
@@ -500,7 +500,7 @@ class CQuickHealScanner(CAvScanner):
 
     try:
       cmd = self.build_cmd(path)
-    
+
     except: # There is no entry in the *.cfg file for this AV engine?
       pass
 
@@ -515,7 +515,7 @@ class CQuickHealScanner(CAvScanner):
     os.unlink(fname)
     matches = re.findall(self.pattern, output, re.IGNORECASE|re.MULTILINE)
     for match in matches:
-      self.results[match[self.file_index].rstrip('\r')] = match[self.malware_index]    
+      self.results[match[self.file_index].rstrip('\r')] = match[self.malware_index]
 
     return len(self.results) > 0
 
