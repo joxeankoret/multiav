@@ -410,6 +410,7 @@ class CAvgScanner(CAvScanner):
     # This is why...
     self.speed = AV_SPEED_ULTRA
     self.pattern = "\>{0,1}(.*) \s+[a-z]+\s+[a-z]+\s+(.*)"
+    self.pattern2 = "\>{0,1}(.*) \s+[a-z]+\s+(.*)" #like this:Luhe.Fiha.A
 
   def scan(self, path):
     cmd = self.build_cmd(path)
@@ -426,7 +427,9 @@ class CAvgScanner(CAvScanner):
     output = open(fname, "rb").read()
     os.unlink(fname)
 
-    matches = re.findall(self.pattern, output, re.IGNORECASE|re.MULTILINE)
+    matches1 = re.findall(self.pattern1, output, re.IGNORECASE|re.MULTILINE)
+    matches2 = re.findall(self.pattern2, output, re.IGNORECASE|re.MULTILINE)
+    matches = matches1 +matches2
     for match in matches:
       if match[1] not in ["file"]:
         self.results[match[0]] = match[1]
