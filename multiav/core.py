@@ -141,26 +141,26 @@ class CTrendmicroScanner(CAvScanner):
 
   def scan(self, path):
     if self.pattern is None:
-        Exception("Not implemented")
+      Exception("Not implemented")
 
     try:
-        cmd = self.build_cmd(path)
+      cmd = self.build_cmd(path)
     except:
-        pass
+      pass
     
     logdir = '/var/log/TrendMicro/SProtectLinux'
     logfile = logdir+'/Virus.' + time.strftime('%Y%m%d') + '.0001'
     call(cmd)
 
     with open(logfile, 'r') as log:
-        output = log.read()
+      output = log.read()
     reset = open(logfile, 'wb') #Clear the log file
     reset.close()
 
     matches1 = re.findall(self.pattern1, output, re.IGNORECASE|re.MULTILINE)
     matches2 = re.findall(self.pattern2, output, re.IGNORECASE|re.MULTILINE)
     for i in range(len(matches1)):
-        self.results[matches1[i].split(' (')[0]] = matches2[i]
+      self.results[matches1[i].split(' (')[0]] = matches2[i]
 
     return len(self.results) > 0
 #-----------------------------------------------------------------------
