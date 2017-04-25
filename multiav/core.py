@@ -163,6 +163,7 @@ class CTrendmicroScanner(CAvScanner):
         self.results[matches1[i].split(' (')[0]] = matches2[i]
 
     return len(self.results) > 0
+#-----------------------------------------------------------------------
 
 class CComodoScanner(CAvScanner):
   def __init__(self, cfg_parser):
