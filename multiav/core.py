@@ -468,7 +468,7 @@ class CAvgScanner(CAvScanner):
     matches = matches1 +matches2
     for match in matches:
       if match[1] not in ["file"]:
-        self.results[match[0]] = match[1]
+        self.results[match[0].split(':/')[0]] = match[1]
     return len(self.results) > 0
 
 # -----------------------------------------------------------------------
