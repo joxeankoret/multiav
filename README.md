@@ -6,28 +6,29 @@ engines simultaneously. It uses, with the only exception of ClamAV, the
 command line AV scanners and extracts the malware names from the output
 of the command line tools (for ClamAV it uses the https://code.google.com/p/pyclamd/ extension).
 
-It supports a total of 18 AV engines. The list of currently supported
+It supports a total of 19 AV engines. The list of currently supported
 engines is the following:
 
    * ClamAV (Ultra-fast, using the daemon)
-   * F-Prot (Ultra-fast)
-   * Comodo (Fast)
-   * BitDefender (Medium)
-   * ESET (Slow)
-   * Avira (Slow)
-   * Sophos (Medium)
    * Avast (Ultra-fast, using the daemon)
    * AVG (Ultra-fast, using the daemon)
+   * Cyren (Ultra-fast)
+   * F-Prot (Ultra-fast)
+   * Zoner Antivirus (Ultra-fast)
+   * Comodo (Fast)
+   * MicroWorld-eScan (Fast)
+   * Kaspersky (Fast, tested under MacOSX & Linux)
+   * TrendMicro (Fast, tested under centOS6&7)
+   * F-Secure (Fast)
+   * QuickHeal (Fast)
+   * BitDefender (Medium)
+   * Ikarus (Medium, using Wine in Linux/Unix)
+   * Sophos (Medium)
+   * ESET (Slow)
+   * Avira (Slow)
    * DrWeb (Slow)
    * McAfee (Very slow, only enabled when running all the engines)
-   * Ikarus (Medium, using Wine in Linux/Unix)
-   * F-Secure (Fast)
-   * Kaspersky (Fast, tested under MacOSX & Linux)
-   * Zoner Antivirus (Ultra-fast)
-   * MicroWorld-eScan (Fast)
-   * Cyren (Ultra-fast)
-   * QuickHeal (Fast)
-
+   
 This tool have been tested only under Linux. However, it should work equally
 in other Unix based operating systems as well as in Windows as long as the
 output from the AV command line utilities maintains the same format.
