@@ -151,12 +151,19 @@ class CTrendmicroScanner(CAvScanner):
     logdir = '/var/log/TrendMicro/SProtectLinux'
     logfile = logdir+'/Virus.' + time.strftime('%Y%m%d') + '.0001'
     call(cmd)
-
-    with open(logfile, 'r') as log:
-      output = log.read()
-    reset = open(logfile, 'wb') #Clear the log file
-    reset.close()
-
+    
+    #Monitor trendmicro's process and read the log only after the end of the scan
+    while True:
+      ps_str = os.popen('ps ax | grep splx_manual_scan').read()
+      ps_strs = ps_str.strip().split('\n')
+      if len(ps_strs) > 2:
+        time.sleep(0.5)
+      else:
+        with open(logfile, 'rb') as log:
+          output = log.read()
+        break
+    call(['rm','-rf','/var/log/TrendMicro/SProtectLinux']) #Clear the log
+	
     matches1 = re.findall(self.pattern1, output, re.IGNORECASE|re.MULTILINE)
     matches2 = re.findall(self.pattern2, output, re.IGNORECASE|re.MULTILINE)
     for i in range(len(matches1)):
