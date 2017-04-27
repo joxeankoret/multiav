@@ -152,7 +152,9 @@ class CTrendmicroScanner(CAvScanner):
     logfile = logdir+'/Virus.' + time.strftime('%Y%m%d') + '.0001'
     call(cmd)
     
+    #Monitor trendmicro's process and read the log only after the end of the scan
     while True:
+      ps_str = os.popen('ps ax | grep splx_manual_scan').read()
       ps_strs = ps_str.strip().split('\n')
       if len(ps_strs) > 2:
         time.sleep(0.5)
