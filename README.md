@@ -1,3 +1,5 @@
+# ARCHIVED PROJECT: I do not support it anymore.
+
 MultiAV Scanner Wrapper
 =======================
 
